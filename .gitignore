@@ -1,0 +1,9 @@
+/accountapi.zip
+/build
+
+# Nodejs
+/node_modules
+/yarn-error.log
+
+# Editor
+/.vscode
