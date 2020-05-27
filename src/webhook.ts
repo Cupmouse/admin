@@ -67,7 +67,7 @@ const webhookEndpointFactory = (db: any, stripeClient: Stripe, mailTransport: Ma
           },
           to: email,
           subject: "API-key and password for your account are generated",
-          text: `Thank your for your purchase!\nHere is your new API-key that we have created:\n${encodeBase64(apikey)}\n\nYou can use it to access our API.\nWe have also created your account to access API-key Console.\nHere is the credentials:\nEmail: ${email}\nPassword: ${password}\nConsole is used to purchase new ticket for your API-key.\n\nExchangedataset\nSupport: support@exchangedataset.cc\n<This email is sent by the system. Please do not respond to this email.>`,
+          text: `Thank your for your purchase!\nHere is your new API-key that we have created:\n${encodeBase64(apikey)}\n\nYou can use it to access our API.\nWe have also created your account to access API-key Console.\nHere are the credentials:\nEmail: ${email}\nPassword: ${password}\nConsole is used to purchase new ticket for your API-key.\n\nExchangedataset\nSupport: support@exchangedataset.cc\n<This email is sent by the system. Please do not respond to this email.>`,
         };
       } else {
         throw new Error('unknown method');

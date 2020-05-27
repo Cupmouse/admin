@@ -1,7 +1,7 @@
 export const CORS_ORIGIN = process.env.NODE_ENV === 'production' ? [
-  'https://admin.exchangedataset.cc/',
-  'https://console.exchangedataset.cc/',
-  'https://www.exchangedataset.cc/'
+  'https://admin.exchangedataset.cc',
+  'https://console.exchangedataset.cc',
+  'https://www.exchangedataset.cc'
 ] : [
   'http://localhost:3003',
   'http://localhost:3001',
@@ -18,8 +18,8 @@ export const GB = 2n ** 30n;
 export const COOKIE_SECRET = '4yEKudNCIqI17OqX1PHsR0xCURJ4U6ux';
 export const ADMIN_USER = 'admin';
 export const ADMIN_PASSWORD = 'ymYnvvJ9xZvJD8EmVMjvY6Ri0waYtACN';
-export const STRIPE_SECRET = process.env.NODE_ENV === 'production' ? 'sk_live_auukHKXmdrh0CFGoWGTPa03t00f6PCVpsX' : 'sk_test_xd8VeKvIB6UPXLNghXAyI1cK0096Fo6qga';
-export const STRIPE_WEBHOOK_SECRET = process.env.NODE_ENV === 'production' ? 'whsec_WlJ3lIv3grLCq4MQ6WFFIA5LUohokahM' : 'whsec_DGswWLKtyBHc6L12tUR8Cpaw1SQQ8Fxp';
+export const STRIPE_SECRET = process.env.PAYMENT_ENV === 'live' ? 'sk_live_auukHKXmdrh0CFGoWGTPa03t00f6PCVpsX' : 'sk_test_xd8VeKvIB6UPXLNghXAyI1cK0096Fo6qga';
+export const STRIPE_WEBHOOK_SECRET = process.env.PAYMENT_ENV === 'live' ? 'whsec_WlJ3lIv3grLCq4MQ6WFFIA5LUohokahM' : 'whsec_zwFMusVIuZFpmoUEc34q1bV2JStF6C4n';
 export const QUOTA_MAX = 10000000n;
 export const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 // stripe uses cent as a minimum currency size

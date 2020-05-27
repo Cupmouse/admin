@@ -4,12 +4,14 @@ import http from 'http';
 import createError from 'http-errors';
 import express, { Request, Response, RequestHandler } from 'express';
 import cors from 'cors';
-import session from 'express-session';
+import session, { MemoryStore } from 'express-session';
 import helmet from 'helmet';
 import Stripe from "stripe";
 import nodemailer from 'nodemailer';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
+import redis from 'redis';
+import connectRedis from 'connect-redis';
 const mysql2 = require('mysql2/promise');
 
 import loginHandlerFactory from './auth/login';
@@ -37,7 +39,16 @@ app.use(cors({
   origin: CORS_ORIGIN,
   credentials: true,
 }));
+let store;
+if (process.env.NODE_ENV === 'production') {
+  const RedisStore = connectRedis(session);
+  const redisCli = redis.createClient();
+  store = new RedisStore({ client: redisCli });
+} else {
+  store = new MemoryStore();
+}
 app.use(session({
+  store,
   secret: COOKIE_SECRET,
   resave: true,
   saveUninitialized: false,
@@ -106,6 +117,13 @@ app.use((err: Error, req: Request, res: Response, next: RequestHandler) => {
   }
 });
 
-const server = http.createServer(app).listen(3000);
+// listen server
+
+const server = http.createServer(app);
+let port = 3000;
+if (typeof process.env.PORT !== 'undefined') {
+  port = parseInt(process.env.PORT);
+}
+server.listen(port);
 server.on('error', console.log);
 server.on('listening', () => console.log('listening'));
