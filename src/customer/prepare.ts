@@ -23,6 +23,9 @@ const prepareCustomerHandlerFactory = (db: any, stripeClient: Stripe): RequestHa
     if (quota > QUOTA_MAX) {
       throw createHttpError(400, "quota is too big");
     }
+    if (quota <= 0) {
+      throw createHttpError(400, "quota is too small");
+    }
     const price = calcPrice(quota);
     if (price > BigInt(Number.MAX_SAFE_INTEGER)) {
       throw createHttpError(400, "payment price is too big, unsafe to continue");

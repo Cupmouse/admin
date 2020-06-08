@@ -1,4 +1,32 @@
 {
+  "corsOrigins": [
+    "https://localhost:3000"
+  ],
+  "database": {
+    "host": "",
+    "user": "",
+    "port": 3306,
+    "password": "",
+    "database": "",
+    "ssl": {
+      "enabled": false,
+      "certificate": ""
+    }
+  },
+  "cookieSecret": "",
+  "adminUser": {
+    "email": "",
+    "password": ""
+  },
+  "stripe": {
+    "secret": "",
+    "webhookSecret": ""
+  },
+  "mail": {
+    "host": "",
+    "user": "",
+    "password": ""
+  },
   "priceTable": [
     {
       "end": 1,

@@ -83,8 +83,12 @@ const webhookEndpointFactory = (db: any, stripeClient: Stripe, mailTransport: Ma
 
     // returning this will ensure we received this message
     res.json({ received: true });
-
-    await mailTransport.sendMail(mailMsg);
+    
+    try {
+      await mailTransport.sendMail(mailMsg);
+    } catch (e) {
+      console.log(e);
+    }
   } catch (e) {
     next(e);
   }

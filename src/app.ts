@@ -52,16 +52,30 @@ app.use(session({
 app.use(morgan('dev'));
 
 // initialize database connection pool
-const db = mysql2.createPool({
+const dbConfig: {
+  host: string;
+  user: string;
+  password: string;
+  database: string;
+  port: number;
+  ssl?: string;
+  supportBigNumbers: boolean;
+  timezone: string;
+} = {
   host: config.get<string>("database.host"),
   user: config.get<string>("database.user"),
   password: config.get<string>("database.password"),
   database: config.get<string>("database.database"),
   port: config.get<number>("database.port"),
-  ssl: 'Amazon RDS',
   supportBigNumbers: true,
   timezone: 'Z',
-});
+};
+
+if (config.get<boolean>("database.ssl.enabled")) {
+  dbConfig.ssl = config.get<string>("database.ssl.certificate");
+}
+
+const db = mysql2.createPool(dbConfig);
 
 // create new stripe client
 const stripeClient = new Stripe(config.get<string>("stripe.secret"), {
@@ -69,11 +83,11 @@ const stripeClient = new Stripe(config.get<string>("stripe.secret"), {
 });
 
 const mailTransport = nodemailer.createTransport({
-  host: 'email-smtp.us-east-1.amazonaws.com',
+  host: config.get<string>("mail.host"),
   secure: true,
   auth: {
-    user: 'AKIA4NFVPVH64H3EUJEQ',
-    pass: 'BMLNt/TVdtDCWoC4M4gHJSsaMsKions2p0RmX4/KGfTX',
+    user: config.get<string>("mail.user"),
+    pass: config.get<string>("mail.password"),
   },
 });
 

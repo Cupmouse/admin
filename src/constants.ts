@@ -23,10 +23,12 @@ const loadPriceTable = (): PriceTable => {
     price: number;
   }[] = config.get("priceTable");
 
-  const table: PriceTable = [];
+  const table: PriceTable = new Array(orig.length);
   for (let i = 0; i < orig.length; i++) {
-    table[i].end = BigInt(orig[i].end);
-    table[i].price = BigInt(orig[i].price);
+    table[i] = {
+      end: orig[i].end == -1 ? QUOTA_MAX : BigInt(orig[i].end),
+      price: BigInt(orig[i].price),
+    }
   }
 
   return table;
