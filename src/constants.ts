@@ -1,68 +1,49 @@
-export const CORS_ORIGIN = process.env.NODE_ENV === 'production' ? [
-  'https://admin.exchangedataset.cc',
-  'https://console.exchangedataset.cc',
-  'https://www.exchangedataset.cc'
-] : [
-  'http://localhost:3003',
-  'http://localhost:3001',
-  'http://localhost:3000',
-];
+import config from 'config';
 
-export const DATABASE_HOST = 'exchangedataset-database.cqdpweplfhn7.us-east-2.rds.amazonaws.com';
-export const DATABASE_USER = 'console';
-export const DATABASE_PASSWORD = 'JmHwxedjgSTywPVmVF2ahZUg3gH6FUF0';
-export const DATABASE_NAME = 'exchangedataset';
-export const DATABASE_PORT = 25883;
 export const SALT_ROUNDS = 13;
 export const GB = 2n ** 30n;
-export const COOKIE_SECRET = '4yEKudNCIqI17OqX1PHsR0xCURJ4U6ux';
-export const ADMIN_USER = 'admin';
-export const ADMIN_PASSWORD = 'ymYnvvJ9xZvJD8EmVMjvY6Ri0waYtACN';
-export const STRIPE_SECRET = process.env.PAYMENT_ENV === 'live' ? 'sk_live_auukHKXmdrh0CFGoWGTPa03t00f6PCVpsX' : 'sk_test_xd8VeKvIB6UPXLNghXAyI1cK0096Fo6qga';
-export const STRIPE_WEBHOOK_SECRET = process.env.PAYMENT_ENV === 'live' ? 'whsec_WlJ3lIv3grLCq4MQ6WFFIA5LUohokahM' : 'whsec_zwFMusVIuZFpmoUEc34q1bV2JStF6C4n';
+export const ADMIN_USER = config.get<string>("adminUser.email");
+export const ADMIN_PASSWORD = config.get<string>("adminUser.password");
 export const QUOTA_MAX = 10000000n;
 export const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-// stripe uses cent as a minimum currency size
-export const PRICING_TABLE = [
-  {
-    end: 1n,
-    price: 1000n,
-  },
-  {
-    end: 30n,
-    price: 100n,
-  },
-  {
-    end: 200n,
-    price: 40n,
-  },
-  {
-    end: 1000n,
-    price: 35n,
-  },
-  {
-    // FIXME CHANGE THIS IF YOU CHANGED QUOTA_MAX
-    end: QUOTA_MAX*1000000000000n,
-    price: 25n,
-  },
-]
+
+type PriceTable = {
+  end: bigint;
+  price: bigint;
+}[];
 const min = (a: bigint, b: bigint): bigint => {
   return a < b ? a : b;
 };
 const max = (a: bigint, b: bigint): bigint => {
   return a > b ? a : b;
 };
+const loadPriceTable = (): PriceTable => {
+  const orig: {
+    end: number;
+    price: number;
+  }[] = config.get("priceTable");
+
+  const table: PriceTable = [];
+  for (let i = 0; i < orig.length; i++) {
+    table[i].end = BigInt(orig[i].end);
+    table[i].price = BigInt(orig[i].price);
+  }
+
+  return table;
+};
+
 export const calcPrice = (quota: bigint): bigint => {
+  const priceTable = loadPriceTable();
   let price = 0n;
-  price += min(quota, PRICING_TABLE[0].end) * PRICING_TABLE[0].price;
-  quota = max(quota - PRICING_TABLE[0].end, 0n);
-  for (let i = 1; i < PRICING_TABLE.length; i++) {
-    const step = PRICING_TABLE[i].end - PRICING_TABLE[i-1].end;
-    price += min(quota, step) * PRICING_TABLE[i].price;
+  price += min(quota, priceTable[0].end) * priceTable[0].price;
+  quota = max(quota - priceTable[0].end, 0n);
+  for (let i = 1; i < priceTable.length; i++) {
+    const step = priceTable[i].end - priceTable[i-1].end;
+    price += min(quota, step) * priceTable[i].price;
     quota = max(quota - step, 0n);
   }
   return price;
-}
+};
 
 export const ERR_NOT_LOGGED_IN = 'you must be logged in to access this resource';
 export const ERR_DONT_HAVE_PERMISSION = 'you don\'t have a permission to access this resource';

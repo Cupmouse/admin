@@ -2,12 +2,13 @@ import { RequestHandler, Response, Request } from "express";
 import Stripe from "stripe";
 import createHttpError from "http-errors";
 import Mail from "nodemailer/lib/mailer";
+import config from 'config';
 
 import { createNewTicket } from "./ticket/db";
 import { registerNewCustomer, searchCustomerAPIKey } from "./customer/db";
 import { createNewAPIKey } from "./apikey/db";
 import { generatePassword, decodeBase64, encodeBase64 } from "./common";
-import { PASSWORD_LENGTH, STRIPE_WEBHOOK_SECRET, GB } from "./constants";
+import { PASSWORD_LENGTH, GB } from "./constants";
 
 const webhookEndpointFactory = (db: any, stripeClient: Stripe, mailTransport: Mail): RequestHandler => async (req: Request, res: Response, next): Promise<void> => {
   try {
@@ -17,9 +18,11 @@ const webhookEndpointFactory = (db: any, stripeClient: Stripe, mailTransport: Ma
       throw createHttpError(400, 'signature is missing');
     }
 
+    const webhookSecret = config.get<string>("stripe.webhookSecret");
+
     let event = null;
     try {
-      event = stripeClient.webhooks.constructEvent(req.body, signature, STRIPE_WEBHOOK_SECRET);
+      event = stripeClient.webhooks.constructEvent(req.body, signature, webhookSecret);
     } catch (err) {
       throw createHttpError(400, 'signature is invalid');
     }

@@ -1,5 +1,7 @@
 /accountapi.zip
 /build
+/config/production.json
+/config/development.json
 
 # Nodejs
 /node_modules

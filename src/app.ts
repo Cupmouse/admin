@@ -12,6 +12,7 @@ import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import redis from 'redis';
 import connectRedis from 'connect-redis';
+import config from 'config';
 const mysql2 = require('mysql2/promise');
 
 import loginHandlerFactory from './auth/login';
@@ -21,22 +22,12 @@ import ticketRouterFactory from './ticket/router';
 import webhookEndpointFactory from './webhook';
 import { checkSession } from './auth/handlers';
 // constant value would change according to the environment (dev or prod)
-import  {
-  CORS_ORIGIN,
-  DATABASE_HOST,
-  DATABASE_USER,
-  DATABASE_PASSWORD,
-  DATABASE_NAME,
-  DATABASE_PORT,
-  COOKIE_SECRET,
-  STRIPE_SECRET,
-  ERR_DONT_HAVE_PERMISSION,
-} from  './constants';
+import  { ERR_DONT_HAVE_PERMISSION } from  './constants';
 
 const app = express();
 app.use(helmet());
 app.use(cors({
-  origin: CORS_ORIGIN,
+  origin: config.get<string[]>("corsOrigins"),
   credentials: true,
 }));
 let store;
@@ -49,7 +40,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 app.use(session({
   store,
-  secret: COOKIE_SECRET,
+  secret: config.get<string>("cookieSecret"),
   resave: true,
   saveUninitialized: false,
   cookie: {
@@ -62,18 +53,18 @@ app.use(morgan('dev'));
 
 // initialize database connection pool
 const db = mysql2.createPool({
-  host: DATABASE_HOST,
-  user: DATABASE_USER,
-  password: DATABASE_PASSWORD,
-  database: DATABASE_NAME,
-  port: DATABASE_PORT,
+  host: config.get<string>("database.host"),
+  user: config.get<string>("database.user"),
+  password: config.get<string>("database.password"),
+  database: config.get<string>("database.database"),
+  port: config.get<number>("database.port"),
   ssl: 'Amazon RDS',
   supportBigNumbers: true,
   timezone: 'Z',
 });
 
 // create new stripe client
-const stripeClient = new Stripe(STRIPE_SECRET, {
+const stripeClient = new Stripe(config.get<string>("stripe.secret"), {
   apiVersion: '2020-03-02',
 });
 
