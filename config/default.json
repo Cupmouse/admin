@@ -29,24 +29,20 @@
   },
   "priceTable": [
     {
-      "end": 1,
-      "price": 1000
+      "end": 10,
+      "price": 1300
     },
     {
-      "end": 30,
-      "price": 100
+      "end": 50,
+      "price": 1200
     },
     {
-      "end": 200,
-      "price": 40
-    },
-    {
-      "end": 1000,
-      "price": 35
+      "end": 100,
+      "price": 1100
     },
     {
       "end": -1,
-      "price": 30
+      "price": 1000
     }
   ]
 }
